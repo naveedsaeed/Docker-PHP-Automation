@@ -10,6 +10,8 @@ echo "Installing Required Dependencies..."
 apt install unzip gpw
 
 subdomain=$1
+randomName=$2
+randomPass=$3
 
 #read -p "Enter subdomain name e.g(project or organization name):" subdomain
 
@@ -92,20 +94,20 @@ sudo service nginx restart
 
 
 
-randomPassGen(){
+#randomPassGen(){
 
-  openssl rand -base64 4
+ # openssl rand -base64 4
 
-}
+#}
 
-randomNameGen(){
+#randomNameGen(){
 
-  gpw 1 4
+ # gpw 1 4
 
-}
+#}
 
-randomPass=$(randomPassGen)
-randomName=${subdomain}$(randomNameGen)
+#randomPass=$(randomPassGen)
+#randomName=${subdomain}$(randomNameGen)
 
 sleep 5
 echo "Creating Database..."
@@ -165,5 +167,3 @@ echo "\n Database Name: ${randomName}"
 echo "\n Database User: ${randomName}"
 echo "\n Database User Password: ${randomPass}"
 echo "\n ****************************************"
-
-exit 0
