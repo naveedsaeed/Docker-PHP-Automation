@@ -1,6 +1,5 @@
 #bin/bash
 
-site="creativecamp.site"
 ipaddr="172.104.227.87"
 mysqlPass="SqlAdmin12345"
 LINODE_TOKEN="9fbb0118c8c58ce3d4c9b0d6432f2f9fce21e6e50c6cc9a09a1bf512bb32ae3e"
@@ -9,9 +8,10 @@ domain_id="1357240"
 echo "Installing Required Dependencies..."
 apt install unzip gpw
 
-subdomain=$1
-randomName=$2
-randomPass=$3
+site=$1
+subdomain=$2
+randomName=$3
+randomPass=$4
 
 #read -p "Enter subdomain name e.g(project or organization name):" subdomain
 
@@ -42,13 +42,13 @@ curl -H "Content-Type: application/json" \
     }' \
     https://api.linode.com/v4/domains/$domain_id/records
 
-sleep 5
+#sleep 5
 
 echo "\n Cloning Neom Website Directory"
 
 cp -R /home/forge/neom-erp.com/ /home/forge/$subdomain.$site/
 
-sleep 5
+#sleep 5
 echo "\n Creating Sub Domain and Nginx Configuration"
 uri='$uri'
 cat > /etc/nginx/sites-available/$subdomain.$site << EOF
@@ -84,11 +84,11 @@ server {
 }
 EOF
 
-sleep 5
+#sleep 5
 echo "\n Enabling Sub Domain"
 ln -s /etc/nginx/sites-available/$subdomain.$site /etc/nginx/sites-enabled/
 
-sleep 5
+#sleep 5
 echo "\n Restarting Nginx"
 sudo service nginx restart
 
@@ -109,13 +109,13 @@ sudo service nginx restart
 #randomPass=$(randomPassGen)
 #randomName=${subdomain}$(randomNameGen)
 
-sleep 5
+#sleep 5
 echo "Creating Database..."
 mysql -u root --password="'$mysqlPass'" -e "CREATE DATABASE ${randomName}"
 echo "Restoring Database..."
 mysql -u root --password="'$mysqlPass'" $randomName < database.sql
 
-sleep 5
+#sleep 5
 echo "Creating User and assigning to database..."
 mysql -u root --password="'$mysqlPass'" -e "CREATE USER '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
 mysql -u root --password="'$mysqlPass'" -e "USE ${randomName};"
@@ -158,12 +158,12 @@ $db['default'] = array(
 );
 EOF
 
-sleep 5
-echo "\n ****************************************"
-echo "\n Script has been installed successfully!"
-echo "\n ****************************************"
-echo "\n Domain URL: http://${subdomain}.${site}"
-echo "\n Database Name: ${randomName}"
-echo "\n Database User: ${randomName}"
-echo "\n Database User Password: ${randomPass}"
-echo "\n ****************************************"
+#sleep 5
+#echo "\n ****************************************"
+#echo "\n Script has been installed successfully!"
+#echo "\n ****************************************"
+#echo "\n Domain URL: http://${subdomain}.${site}"
+#echo "\n Database Name: ${randomName}"
+#echo "\n Database User: ${randomName}"
+#echo "\n Database User Password: ${randomPass}"
+#echo "\n ****************************************"
