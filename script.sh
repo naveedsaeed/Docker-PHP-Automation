@@ -13,6 +13,7 @@ subdomain=$2
 randomName=$3
 randomPass=$4
 
+ 
 #read -p "Enter subdomain name e.g(project or organization name):" subdomain
 
 #while true; do
@@ -118,12 +119,14 @@ mysql -u root --password="'$mysqlPass'" $randomName < database.sql
 #sleep 5
 echo "Creating User and assigning to database..."
 mysql -u root --password="'$mysqlPass'" -e "CREATE USER '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
-mysql -u root --password="'$mysqlPass'" -e "USE ${randomName};"
 mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${randomName}.* TO '${randomName}'@'%';"
 mysql -u root --password="'$mysqlPass'" -e "FLUSH PRIVILEGES;"
+mysql -u root --password="'$mysqlPass'" -e "UPDATE ${randomName}.frontend_settings SET theme = 'ultimate' WHERE id='1';"
 
-echo "\n Restoring Database File"
+echo "\n Restoring Database Config File"
 rm /home/forge/$subdomain.$site/application/config/database.php
+
+
 php='$php'
 active_group='$active_group'
 query_builder='$query_builder'

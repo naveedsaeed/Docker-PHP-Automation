@@ -12,7 +12,7 @@ if($subdomain == null){
 
 if (file_exists($folder_path))  
 { 
-    exit("This Domain already exist! Please choose another one.");
+    exit("The domain '$subdomain.$site' already exist! Please choose another one.");
 } 
 
 sleep(15);
