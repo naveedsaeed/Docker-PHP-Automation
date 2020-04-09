@@ -1,6 +1,6 @@
 <?php
 
-$site = "creativecamp.site";
+$site = "";
 $subdomain = $_GET['subdomain'];
 $folder_path = "/home/forge/$subdomain.$site";
 
