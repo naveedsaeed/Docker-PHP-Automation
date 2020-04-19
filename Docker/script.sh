@@ -1,174 +1,100 @@
-#bin/bash
+#!/bin/bash
 
-ipaddr="172.104.227.87"
-mysqlPass="SqlAdmin12345"
+
+ipaddr="172.104.142.96"
 LINODE_TOKEN="9fbb0118c8c58ce3d4c9b0d6432f2f9fce21e6e50c6cc9a09a1bf512bb32ae3e"
-domain_id="1357240"
+domain_id="1360312"
 
-echo "Installing Required Dependencies..."
-apt install unzip gpw
+site="creativecamp.site"
+subdomain=$1
+username=$2
+password=$3
+email=$4
 
-site=$1
-subdomain=$2
-randomName=$3
-randomPass=$4
-
- 
-#read -p "Enter subdomain name e.g(project or organization name):" subdomain
-
-#while true; do
- #   read -p "The Domain will be hosted as: ${subdomain}.${site}. Do you wish to continue?" yn
-  #  case $yn in
-   #     [Yy]* ) break;;
-    #    [Nn]* ) exit;;
-     #   * ) echo "Please answer yes or no.";;
-    #esac
-#done
-
-#DIR="/home/forge/${subdomain}.${site}"
-#if [ -d "$DIR" ]; then
- # echo "Error: ${subdomain}.${site} already exist. Can not continue."
-  #exit 1
-#fi
+echo $username
+echo $password
 
 
-echo "\n Creating DNS Record in Linode"
+#randomNameGen(){
+
+#  gpw 1 4
+
+#}
+
+#randomName=${subdomain}$(randomNameGen)
+
+echo "\n Creating DNS Record for NextCloud...."
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer $LINODE_TOKEN" \
     -X POST -d '{
       "type": "A",
-      "name": "'$subdomain'",
+      "name": "'${subdomain}cloud'",
       "target": "'$ipaddr'"
     }' \
     https://api.linode.com/v4/domains/$domain_id/records
 
+
+
+docker run -it -d -p 0:80 \
+-e MYSQL_HOST='127.0.0.1' \
+-e MYSQL_DATABASE='nextcloud' \
+-e MYSQL_USER='cloud' \
+-e MYSQL_PASSWORD='zScGCZHj' \
+-e NEXTCLOUD_ADMIN_USER="$username" \
+-e NEXTCLOUD_ADMIN_PASSWORD="$password" \
+-e NEXTCLOUD_TRUSTED_DOMAINS="${subdomain}cloud.${site}" \
+--name ${subdomain}_cloud mnaveed/public:nextcloud-v1
+
+nextcloud_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "80/tcp") 0).HostPort }}' ${subdomain}_cloud)
+
 #sleep 5
-
-echo "\n Cloning Neom Website Directory"
-
-cp -R /home/forge/neom-erp.com/ /home/forge/$subdomain.$site/
-
-#sleep 5
-echo "\n Creating Sub Domain and Nginx Configuration"
-uri='$uri'
-cat > /etc/nginx/sites-available/$subdomain.$site << EOF
+echo "\n Creating Sub Domain and Nginx Configuration for NextCloud"
+cat > /etc/nginx/sites-available/${subdomain}cloud.$site << EOF
 server {
-        listen       80;
-        server_name  $subdomain.$site;
-        root   /home/forge/$subdomain.$site/;
-        autoindex on;
-        index index.php;
+    server_name     ${subdomain}cloud.${site};
+    location / {
+        proxy_pass  http://${site}:${nextcloud_port};
+    } 
 
-        location / {
+}
+EOF
+ 
+sleep 5
 
-            try_files $uri $uri/ /index.php;
-        }
+echo "\n Creating DNS Record for Whiteboard...."
 
-	      location = /favicon.ico { access_log off; log_not_found off; }
-        location = /robots.txt  { access_log off; log_not_found off; }
+curl -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $LINODE_TOKEN" \
+    -X POST -d '{
+      "type": "A",
+      "name": "'${subdomain}whiteboard'",
+      "target": "'$ipaddr'"
+    }' \
+    https://api.linode.com/v4/domains/$domain_id/records
 
-        access_log off;
-      	error_page 404 /index.php;
+whiteboard_port=$(($nextcloud_port+1))
 
-        location ~ \.php$ {
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
-        fastcgi_index index.php;
-        include fastcgi_params;
-       }
+docker run -it -d -p ${whiteboard_port}:9666 \
+--name ${subdomain}_whiteboard --entrypoint="/entrypoint.sh" mnaveed/public:whiteboard-v1 \
+${site} ${whiteboard_port} ${email} ${password}
 
-        location ~ /\.(?!well-known).* {
-           deny all;
-        }
+
+#sleep 5
+echo "\n Creating Sub Domain and Nginx Configuration for Whiteboard"
+cat > /etc/nginx/sites-available/${subdomain}whiteboard.$site << EOF
+server {
+    server_name     ${subdomain}whiteboard.${site};
+    location / {
+        proxy_pass  http://${site}:${whiteboard_port};
+    } 
 
 }
 EOF
 
-#sleep 5
-echo "\n Enabling Sub Domain"
-ln -s /etc/nginx/sites-available/$subdomain.$site /etc/nginx/sites-enabled/
+echo "Activating Sites..."
+ln -s /etc/nginx/sites-available/${subdomain}cloud.$site /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/${subdomain}whiteboard.$site /etc/nginx/sites-enabled/
 
-#sleep 5
-echo "\n Restarting Nginx"
-sudo service nginx restart
-
-
-
-#randomPassGen(){
-
- # openssl rand -base64 4
-
-#}
-
-#randomNameGen(){
-
- # gpw 1 4
-
-#}
-
-#randomPass=$(randomPassGen)
-#randomName=${subdomain}$(randomNameGen)
-
-#sleep 5
-echo "Creating Database..."
-mysql -u root --password="'$mysqlPass'" -e "CREATE DATABASE ${randomName}"
-echo "Restoring Database..."
-mysql -u root --password="'$mysqlPass'" $randomName < database.sql
-
-#sleep 5
-echo "Creating User and assigning to database..."
-mysql -u root --password="'$mysqlPass'" -e "CREATE USER '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
-mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${randomName}.* TO '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
-mysql -u root --password="'$mysqlPass'" -e "FLUSH PRIVILEGES;"
-mysql -u root --password="'$mysqlPass'" -e "UPDATE ${randomName}.frontend_settings SET theme = 'ultimate' WHERE id='1';"
-
-#mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${randomName}.* TO '${randomName}'@'%';"
-
-echo "\n Restoring Database Config File"
-rm /home/forge/$subdomain.$site/application/config/database.php
-
-
-php='$php'
-active_group='$active_group'
-query_builder='$query_builder'
-db='$db'
-cat > /home/forge/$subdomain.$site/application/config/database.php << EOF
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
-$active_group = 'default';
-$query_builder = TRUE;
-
-$db['default'] = array(
-	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => '${randomName}',
-	'password' => '${randomPass}',
-	'database' => '${randomName}',
-	'dbdriver' => 'mysqli',
-	'dbprefix' => '',
-	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => 'utf8_general_ci',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => TRUE
-);
-EOF
-
-#sleep 5
-#echo "\n ****************************************"
-#echo "\n Script has been installed successfully!"
-#echo "\n ****************************************"
-#echo "\n Domain URL: http://${subdomain}.${site}"
-#echo "\n Database Name: ${randomName}"
-#echo "\n Database User: ${randomName}"
-#echo "\n Database User Password: ${randomPass}"
-#echo "\n ****************************************"
+echo "Restarting Nginx Server..."
+service nginx restart

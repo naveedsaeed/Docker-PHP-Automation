@@ -1,51 +1,42 @@
 <?php
 
-$site = "creativecamp.site";
+$site="creativecamp.site";
+
 $subdomain = $_GET['subdomain'];
-$folder_path = "/home/forge/$subdomain.$site";
+$username = $_GET['username'];
+$password = $_GET['password'];
+$email = $_GET['email'];
 
 if($subdomain == null){
 
     exit("Please provide a valid subdomain!");
     
 }
+if($username == null){
 
-if (file_exists($folder_path))  
-{ 
-    exit("The domain '$subdomain.$site' already exist! Please choose another one.");
-} 
-
-sleep(15);
-
-function getRandomName($n,$type) {
-    if($type == 1){
-
-        $characters = 'abcdefghijklmnopqrstuvwxyz';
-    }
-    else{
-
-        $characters = '!@#$%^&*+=123456789abcdefghijklmnopqrstuvwxyz';
-    }
+    exit("Please provide a username!");
     
-    $randomString = ''; 
-  
-    for ($i = 0; $i < $n; $i++) { 
-        $index = rand(0, strlen($characters) - 1); 
-        $randomString .= $characters[$index]; 
-    } 
-  
-    return $randomString; 
-} 
+}
+if($password == null){
+
+    exit("Password cannot be blank!");
+    
+}
+
+if($email == null){
+
+    exit("Please provide a valid email address!");
+    
+}
+
+sleep(5);
 
 
-$randomName = $subdomain.getRandomName(4,1);
-$randomPass = getRandomName(7,2);
- 
-
-$output = shell_exec("sudo ./script.sh $site $subdomain $randomName $randomPass> /dev/null 2>&1 &");
+$output = shell_exec("sudo ./script.sh $subdomain $username $password $email> /dev/null 2>&1 &");
 
 
 
+sleep(10);
 
 echo "<table>";
 echo "<tr>";
@@ -58,16 +49,28 @@ echo "<tr>";
 echo "<td>****************************************</td>";
 echo "</tr>";
 echo "<tr>";
-echo "<td>Domain URL: http://${subdomain}.${site}</td>";
+echo "<td>Whiteboard</td>";
 echo "</tr>";
 echo "<tr>";
-echo "<td>Database Name: ${randomName}</td>";
+echo "<td>Domain URL: http://${subdomain}whiteboard.${site}</td>";
 echo "</tr>";
 echo "<tr>";
-echo "<td>Database User: ${randomName}</td>";
+echo "<td>NextCloud</td>";
 echo "</tr>";
 echo "<tr>";
-echo "<td>Database User Password: ${randomPass}</td>";
+echo "<td>Domain URL: http://${subdomain}cloud.${site}</td>";
+echo "</tr>";
+echo "<tr>";
+echo "<td>****************************************</td>";
+echo "</tr>";
+echo "<tr>";
+echo "<td>Username: $username</td>";
+echo "</tr>";
+echo "<tr>";
+echo "<td>Email: $email</td>";
+echo "</tr>";
+echo "<tr>";
+echo "<td>Password: $password</td>";
 echo "</tr>";
 echo "<tr>";
 echo "<td>****************************************</td>";
