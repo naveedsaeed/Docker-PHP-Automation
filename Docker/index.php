@@ -2,10 +2,13 @@
 
 $site="creativecamp.site";
 
+
 $subdomain = $_GET['subdomain'];
-$username = $_GET['username'];
-$password = $_GET['password'];
-$email = $_GET['email'];
+$username = base64_decode($_GET['username']);
+$password = base64_decode($_GET['password']);
+$email = base64_decode($_GET['email']);
+
+$grupoPassword = hash('ripemd128', (crc32(crc32("S1L8SY8VxEx73R" . "$password"))));
 
 if($subdomain == null){
 
@@ -32,47 +35,25 @@ if($email == null){
 sleep(5);
 
 
-$output = shell_exec("sudo ./script.sh $subdomain $username $password $email> /dev/null 2>&1 &");
+$output = shell_exec("sudo ./script.sh $subdomain $username $password $grupoPassword $email> /dev/null 2>&1 &");
 
 
 
 sleep(10);
 
-echo "<table>";
-echo "<tr>";
-echo "<td>****************************************</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>Script has been installed successfully!</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>****************************************</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>Whiteboard</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>Domain URL: http://${subdomain}whiteboard.${site}</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>NextCloud</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>Domain URL: http://${subdomain}cloud.${site}</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>****************************************</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>Username: $username</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>Email: $email</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>Password: $password</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>****************************************</td>";
-echo "</tr>";
-echo "</table>";
+header('Access-Control-Allow-Origin: *');
+header('Content-type: application/json');
+
+$result = array(
+
+    "whiteboard_url" => "http://${subdomain}whiteboard.${site}",
+    "nextcloud_url" => "http://${subdomain}cloud.${site}",
+    "jitsi_url" => "http://${subdomain}jitsi.${site}",
+    "chat_url" => "http://${subdomain}chat.${site}",
+    "email" => "$email",
+    "username" => "$username",
+    "password" => "$password"
+
+);
+
+echo json_encode($result);
