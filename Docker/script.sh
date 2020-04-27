@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ipaddr="172.104.142.96"
 LINODE_TOKEN="9fbb0118c8c58ce3d4c9b0d6432f2f9fce21e6e50c6cc9a09a1bf512bb32ae3e"
 domain_id="1360312"
