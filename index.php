@@ -1,6 +1,6 @@
 <?php
 
-$site = "creativecamp.site";
+$site = "";
 
 $subdomain = $_GET['subdomain'];
 $folder_path = "/home/forge/$subdomain.$site";
@@ -77,7 +77,7 @@ $query = http_build_query([
     'password' => "'$password'",
     'email' => "'$email'"
    ]);
-   
+
 $url = "http://neom-community.com/?".$query;
 
 curl_setopt_array($curl, [

@@ -30,7 +30,9 @@ $grupoPassword = hash('ripemd128', (crc32(crc32("S1L8SY8VxEx73R" . "$password"))
     
 // }
 
-sleep(5);
+
+
+
 
 
 $output = shell_exec("sudo ./script.sh $subdomain $username $password $grupoPassword $email> /dev/null 2>&1 &");
