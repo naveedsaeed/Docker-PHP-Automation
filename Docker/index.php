@@ -46,11 +46,11 @@ header('Content-type: application/json');
 
 $result = array(
     
-    "erp_url" => "http://${subdomain}.${site}",
-    "whiteboard_url" => "http://${subdomain}whiteboard.${site}",
-    "nextcloud_url" => "http://${subdomain}cloud.${site}",
-    "jitsi_url" => "http://${subdomain}jitsi.${site}",
-    "chat_url" => "http://${subdomain}chat.${site}",
+    "erp_url" => "http://${subdomain}.neom-erp.com",
+    "whiteboard_url" => "http://${subdomain}whiteboard.neom-community.com",
+    "nextcloud_url" => "http://${subdomain}cloud.neom-community.com",
+    "jitsi_url" => "http://${subdomain}jitsi.neom-community.com",
+    "chat_url" => "http://${subdomain}chat.neom-community.com",
     "email" => "$email",
     "username" => "$username",
     "password" => "$password"
