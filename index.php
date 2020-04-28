@@ -68,45 +68,55 @@ $randomPass = getRandomName(7,2);
  
 
 $output = shell_exec("sudo ./script.sh $site $subdomain $randomName $randomPass> /dev/null 2>&1 &");
+ 
 
-$curl = curl_init();
+$url = 'http://neom-community.com';
 
-$query = http_build_query([
-    'subdomain' => "'$subdomain'",
-    'username' => "'$username'",
-    'password' => "'$password'",
-    'email' => "'$email'"
-   ]);
+    $data = array (
+        'subdomain' => $subdomain,
+        'username' => $username,
+        'password' => $password,
+        'email' => $email
+        );
+        
+    $params = '';
+    foreach($data as $key=>$value)
+                $params .= $key.'='.$value.'&';
+         
+        $params = trim($params, '&');
 
-$url = "http://neom-community.com/?".$query;
+    $ch = curl_init();
 
-curl_setopt_array($curl, [
-    CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_URL => $url,
-    CURLOPT_USERAGENT => 'Neom ERP Script'
-]);
+    curl_setopt($ch, CURLOPT_URL, $url.'?'.$params ); //Url together with parameters
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Return data instead printing directly in Browser
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 7); //Timeout after 7 seconds
+    curl_setopt($ch, CURLOPT_USERAGENT , "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)");
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    
+    $result = curl_exec($ch);
+    curl_close($ch);
 
-$resp = curl_exec($curl);
-curl_close($curl);
+ 
+
+    if(curl_errno($ch))  //catch if curl error exists and show it
+    echo 'Curl error: ' . curl_error($ch);
+  else
+    echo $result;
 
 
-sleep(10);
+// header('Access-Control-Allow-Origin: *');
+// header('Content-type: application/json');
 
+// $result = array(
+//     "erp_url" => "http://${subdomain}.${site}",
+//     "whiteboard_url" => "http://${subdomain}whiteboard.${site}",
+//     "nextcloud_url" => "http://${subdomain}cloud.${site}",
+//     "jitsi_url" => "http://${subdomain}jitsi.${site}",
+//     "chat_url" => "http://${subdomain}chat.${site}",
+//     "email" => "$email",
+//     "username" => "$username",
+//     "password" => "$password"
 
+// );
 
-header('Access-Control-Allow-Origin: *');
-header('Content-type: application/json');
-
-$result = array(
-    "erp_url" => "http://${subdomain}.${site}",
-    "whiteboard_url" => "http://${subdomain}whiteboard.${site}",
-    "nextcloud_url" => "http://${subdomain}cloud.${site}",
-    "jitsi_url" => "http://${subdomain}jitsi.${site}",
-    "chat_url" => "http://${subdomain}chat.${site}",
-    "email" => "$email",
-    "username" => "$username",
-    "password" => "$password"
-
-);
-
-echo json_encode($result);
+// echo json_encode($result);

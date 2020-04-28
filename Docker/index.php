@@ -41,19 +41,20 @@ $output = shell_exec("sudo ./script.sh $subdomain $username $password $grupoPass
 
 // sleep(10);
 
-// header('Access-Control-Allow-Origin: *');
-// header('Content-type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Content-type: application/json');
 
-// $result = array(
+$result = array(
+    
+    "erp_url" => "http://${subdomain}.${site}",
+    "whiteboard_url" => "http://${subdomain}whiteboard.${site}",
+    "nextcloud_url" => "http://${subdomain}cloud.${site}",
+    "jitsi_url" => "http://${subdomain}jitsi.${site}",
+    "chat_url" => "http://${subdomain}chat.${site}",
+    "email" => "$email",
+    "username" => "$username",
+    "password" => "$password"
 
-//     "whiteboard_url" => "http://${subdomain}whiteboard.${site}",
-//     "nextcloud_url" => "http://${subdomain}cloud.${site}",
-//     "jitsi_url" => "http://${subdomain}jitsi.${site}",
-//     "chat_url" => "http://${subdomain}chat.${site}",
-//     "email" => "$email",
-//     "username" => "$username",
-//     "password" => "$password"
+);
 
-// );
-
-// echo json_encode($result);
+echo json_encode($result);
