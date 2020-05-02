@@ -1,10 +1,10 @@
 #!/bin/bash
 
-ipaddr="172.104.142.96"
-LINODE_TOKEN="9fbb0118c8c58ce3d4c9b0d6432f2f9fce21e6e50c6cc9a09a1bf512bb32ae3e"
-domain_id="1360312"
+ipaddr=""
+LINODE_TOKEN=""
+domain_id=""
 
-site="creativecamp.site"
+site=""
 subdomain=$1
 username=$2
 password=$3
@@ -22,6 +22,13 @@ randomNameGen(){
 }
 
 randomName=${subdomain}$(randomNameGen)
+
+if [ ${#subdomain} -gt 20 ]; then
+  echo "Error: ${subdomain}.${site} too long."
+  exit 1
+fi
+
+#if [ ${#subdomain} -lt 12 ]; then echo "error" ; exit
 
 echo "\n Creating DNS Record for NextCloud...."
 
@@ -60,7 +67,7 @@ server {
 }
 EOF
  
-sleep 5
+#sleep 5
 
 echo "\n Creating DNS Record for Whiteboard...."
 
@@ -73,12 +80,12 @@ curl -H "Content-Type: application/json" \
     }' \
     https://api.linode.com/v4/domains/$domain_id/records
 
-whiteboard_port=$(($nextcloud_port+1))
 
-docker run -it -d -p ${whiteboard_port}:9666 \
+docker run -it -d -p 0:9666 \
 --name ${subdomain}_whiteboard --entrypoint="/entrypoint.sh" mnaveed/public:whiteboard-v1 \
 ${site} ${whiteboard_port} ${email} ${password}
 
+whiteboard_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "9666/tcp") 0).HostPort }}' ${subdomain}_whiteboard)
 
 #sleep 5
 echo "\n Creating Sub Domain and Nginx Configuration for Whiteboard"
@@ -104,11 +111,12 @@ curl -H "Content-Type: application/json" \
     https://api.linode.com/v4/domains/$domain_id/records
 
 
-jitsi_port=$(($whiteboard_port+1))
 
-docker run -it -d -p ${jitsi_port}:443 \
+
+docker run -it -d -p 0:443 \
 --name ${subdomain}_jitsi --entrypoint="/entrypoint.sh" mnaveed/public:jitsi-v3
 
+jitsi_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "443/tcp") 0).HostPort }}' ${subdomain}_jitsi)
 
 #sleep 5
 echo "\n Creating Sub Domain and Nginx Configuration for Jitsi"
@@ -134,12 +142,13 @@ curl -H "Content-Type: application/json" \
     https://api.linode.com/v4/domains/$domain_id/records
 
 
-grupo_port=$(($jitsi_port+1))
 
-docker run -it -d -p ${grupo_port}:80 \
+
+docker run -it -d -p 0:80 \
 --name ${subdomain}_chat --entrypoint="/entrypoint.sh" mnaveed/public:chat-v2 \
 ${username} ${email} ${grupoPassword}
 
+grupo_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "80/tcp") 0).HostPort }}' ${subdomain}_chat)
 
 #sleep 5
 echo "\n Creating Sub Domain and Nginx Configuration for Grupo"

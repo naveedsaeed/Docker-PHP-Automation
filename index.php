@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_startup_errors', 1);
+ini_set('display_errors', 1);
+error_reporting(-1); 
+
 $site = "";
 
 $subdomain = $_GET['subdomain'];
@@ -70,13 +74,16 @@ $randomPass = getRandomName(7,2);
 $output = shell_exec("sudo ./script.sh $site $subdomain $randomName $randomPass> /dev/null 2>&1 &");
  
 
-$url = 'http://neom-community.com';
+$url = 'http://172.105.75.43';
 
     $data = array (
         'subdomain' => $subdomain,
         'username' => $username,
         'password' => $password,
-        'email' => $email
+        'email' => $email,
+        'db_name' => $randomName,
+        'db_username' => $randomName,
+        'db_pass' => $randomPass
         );
         
     $params = '';
@@ -94,16 +101,15 @@ $url = 'http://neom-community.com';
     curl_setopt($ch, CURLOPT_HEADER, 0);
     
     $result = curl_exec($ch);
-    curl_close($ch);
-
- 
 
     if(curl_errno($ch))  //catch if curl error exists and show it
     echo 'Curl error: ' . curl_error($ch);
   else
     echo $result;
 
+    curl_close($ch);
 
+ 
 // header('Access-Control-Allow-Origin: *');
 // header('Content-type: application/json');
 

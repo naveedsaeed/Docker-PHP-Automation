@@ -1,6 +1,6 @@
 #bin/bash
 
-ipaddr="172.104.227.87"
+ipaddr="172.104.154.25"
 mysqlPass="SqlAdmin12345"
 LINODE_TOKEN="9fbb0118c8c58ce3d4c9b0d6432f2f9fce21e6e50c6cc9a09a1bf512bb32ae3e"
 domain_id="1357240"
@@ -122,6 +122,7 @@ mysql -u root --password="'$mysqlPass'" -e "CREATE USER '${randomName}'@'%' IDEN
 mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${randomName}.* TO '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
 mysql -u root --password="'$mysqlPass'" -e "FLUSH PRIVILEGES;"
 mysql -u root --password="'$mysqlPass'" -e "UPDATE ${randomName}.frontend_settings SET theme = 'ultimate' WHERE id='1';"
+ 
 
 #mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${randomName}.* TO '${randomName}'@'%';"
 

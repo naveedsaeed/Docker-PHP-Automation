@@ -5,6 +5,19 @@ $username = base64_decode($_GET['username']);
 $password = base64_decode($_GET['password']);
 $email = base64_decode($_GET['email']);
 
+
+if($subdomain == '' || $username == '' || $password == '' || $email == ''){
+
+
+    header("Location: http://neom-community.com/welcome.php");
+    exit;
+}
+
+
+$dbname = $_GET['db_name'];
+$dbusername = $_GET['db_username'];
+$dbpass = $_GET['db_pass'];
+
 $grupoPassword = hash('ripemd128', (crc32(crc32("S1L8SY8VxEx73R" . "$password"))));
 
 // if($subdomain == null){
@@ -53,7 +66,11 @@ $result = array(
     "chat_url" => "http://${subdomain}chat.neom-community.com",
     "email" => "$email",
     "username" => "$username",
-    "password" => "$password"
+    "password" => "$password",
+    'db_name' => "$dbname",
+    'db_username' => "$dbusername",
+    'db_pass' => "$dbpass",
+    "message" => "Script has been installed successfully!",
 
 );
 
