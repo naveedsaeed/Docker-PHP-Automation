@@ -51,7 +51,7 @@ docker run -it -d -p 0:80 \
 -e NEXTCLOUD_ADMIN_USER="$username" \
 -e NEXTCLOUD_ADMIN_PASSWORD="$password" \
 -e NEXTCLOUD_TRUSTED_DOMAINS="${subdomain}cloud.$site" \
---name ${subdomain}_cloud mnaveed/public:nextcloud-v1
+--name ${subdomain}_cloud mnaveed/public:nextcloud-v2
 
 nextcloud_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "80/tcp") 0).HostPort }}' ${subdomain}_cloud)
 
@@ -82,7 +82,7 @@ curl -H "Content-Type: application/json" \
 
 
 docker run -it -d -p 0:9666 \
---name ${subdomain}_whiteboard --entrypoint="/entrypoint.sh" mnaveed/public:whiteboard-v1 \
+--name ${subdomain}_whiteboard --entrypoint="/entrypoint.sh" mnaveed/public:whiteboard-v2 \
 ${site} ${whiteboard_port} ${email} ${password}
 
 whiteboard_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "9666/tcp") 0).HostPort }}' ${subdomain}_whiteboard)
@@ -145,7 +145,7 @@ curl -H "Content-Type: application/json" \
 
 
 docker run -it -d -p 0:80 \
---name ${subdomain}_chat --entrypoint="/entrypoint.sh" mnaveed/public:chat-v2 \
+--name ${subdomain}_chat --entrypoint="/entrypoint.sh" mnaveed/public:chat-v3 \
 ${username} ${email} ${grupoPassword}
 
 grupo_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "80/tcp") 0).HostPort }}' ${subdomain}_chat)
