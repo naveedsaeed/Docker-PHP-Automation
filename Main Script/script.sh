@@ -1,4 +1,4 @@
-#bin/bash
+#!/bin/bash
 
 ipaddr="172.104.154.25"
 mysqlPass="SqlAdmin12345"
