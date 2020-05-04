@@ -24,6 +24,12 @@ docker exec ${subdomain}_chat bash -c "mysql -u root --password='zScGCZHj' -e \"
 echo "Adding user in cloud module..."
 docker exec ${subdomain}_cloud bash -c "export OC_PASS=$password; su -s /bin/sh www-data -c 'php occ user:add --password-from-env --group='users' $username'"
 
+
+echo "Adding user in whiteboard module..."
+
+
+
+
 }
 
 
