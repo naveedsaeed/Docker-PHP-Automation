@@ -17,16 +17,70 @@ $grupoPassword = hash('ripemd128', (crc32(crc32("S1L8SY8VxEx73R" . "$password"))
 $output = shell_exec("sudo ./update.sh $action $site $subdomain $username $password $grupoPassword $email> /dev/null 2>&1 &");
 
 
+if($action == 'removeSite'){
 
 
-header('Access-Control-Allow-Origin: *');
-header('Content-type: application/json');
-
-$result = array(
+    header('Access-Control-Allow-Origin: *');
+    header('Content-type: application/json');
     
+    $result = array(
+        
+        "message" => "The site has been removed successfully!"
     
-    "message" => "The site has been removed successfully!"
+    );
+    
+    echo json_encode($result);
 
-);
+}
+else if($action == 'addUser'){
 
-echo json_encode($result);
+    header('Access-Control-Allow-Origin: *');
+    header('Content-type: application/json');
+    
+    $result = array(
+        
+        "username" => "$username",
+        "password" => "$password",
+        "email" => "$password",
+        "message" => "The user has been added successfully!"
+    
+    );
+    
+    echo json_encode($result);
+
+}
+
+else if($action == 'removeUser'){
+
+    header('Access-Control-Allow-Origin: *');
+    header('Content-type: application/json');
+    
+    $result = array(
+        
+        "username" => "$username",
+        "password" => "$password",
+        "email" => "$password",
+        "message" => "The user has been deleted successfully!"
+    
+    );
+    
+    echo json_encode($result);
+
+}
+
+else{
+
+    header('Access-Control-Allow-Origin: *');
+    header('Content-type: application/json');
+    
+    $result = array(
+         
+        "message" => "Please provide a valid action!"
+    
+    );
+    
+    echo json_encode($result);
+ 
+
+}
+

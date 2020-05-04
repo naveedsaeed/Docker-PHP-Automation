@@ -12,13 +12,11 @@ email=$7
  
 addUser(){
 
-
 echo "Adding user in chat module..."
 docker exec ${subdomain}_chat bash -c "mysql -u root --password='zScGCZHj' -e \"INSERT into chat.gr_users( name, email, pass, mask, depict, role) select 'newUser', 'new@user.com', pass, mask, depict, role from chat.gr_users where id = 1;\"; exit;"
 docker exec ${subdomain}_chat bash -c "mysql -u root --password='zScGCZHj' -e \"UPDATE chat.gr_users SET email = '$email' WHERE name='newUser';\"; exit;"
 docker exec ${subdomain}_chat bash -c "mysql -u root --password='zScGCZHj' -e \"UPDATE chat.gr_users SET pass = '$grupoPassword' WHERE name='newUser';\"; exit;"
 docker exec ${subdomain}_chat bash -c "mysql -u root --password='zScGCZHj' -e \"UPDATE chat.gr_users SET name = '$username' WHERE name='newUser';\"; exit;"
-
 
 echo "Adding user in cloud module..."
 docker exec ${subdomain}_cloud bash -c "export OC_PASS=$password; su -s /bin/sh www-data -c 'php occ user:add --password-from-env --group='users' $username'"
@@ -26,6 +24,19 @@ docker exec ${subdomain}_cloud bash -c "export OC_PASS=$password; su -s /bin/sh 
 echo "Adding user in whiteboard module..."
 whiteboardPass=$(bcrypt-cli "$password" 10)
 docker exec ${subdomain}_whiteboard bash -c "mongo --eval 'var user = db.users.findOne(); user._id = new ObjectId(); user.nickname = "'"'$username'"'"; user.email = "'"'$email'"'"; user.password_hash = "'"'$whiteboardPass'"'"; db.users.insert(user)' spacedeck"
+
+}
+
+removeUser(){
+
+echo "Removing user in chat module..."
+docker exec ${subdomain}_chat bash -c "mysql -u root --password='zScGCZHj' -e \"DELETE from chat.gr_users WHERE email = '$email' AND name='$username';\"; exit;"
+ 
+echo "Removing user in cloud module..."
+docker exec ${subdomain}_cloud bash -c "export OC_PASS=$password; su -s /bin/sh www-data -c 'php occ user:add --password-from-env --group='users' $username'"
+ 
+echo "Removing user in whiteboard module..." 
+docker exec ${subdomain}_whiteboard bash -c "mongo --eval 'db.users.remove({'email': "'"'$email'"'"})' spacedeck"
 
 }
 
@@ -62,6 +73,9 @@ then
 elif [ "$action" = "addUser" ]
 then
 	act=$(addUser)
+elif [ "$action" = "removeUser" ]
+then
+	act=$(removeUser)
 else
 	echo "Not a valid action!"
 fi
