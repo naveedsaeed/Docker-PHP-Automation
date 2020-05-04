@@ -15,3 +15,15 @@ mysql -u root --password="zScGCZHj" -e "UPDATE chat.gr_users SET name = 'naveed'
 
 docker run -it -d -p 8400:80 \
 --name demo_chat mnaveed/public:chat-v3
+
+
+
+docker run -it -d -p 8200:80 \
+-e MYSQL_HOST='127.0.0.1' \
+-e MYSQL_DATABASE='nextcloud' \
+-e MYSQL_USER='cloud' \
+-e MYSQL_PASSWORD='zScGCZHj' \
+-e NEXTCLOUD_ADMIN_USER="admin" \
+-e NEXTCLOUD_ADMIN_PASSWORD="admin12345" \
+-e NEXTCLOUD_TRUSTED_DOMAINS="creativecamp.site" \
+--name demo_cloud mnaveed/public:nextcloud-v2
