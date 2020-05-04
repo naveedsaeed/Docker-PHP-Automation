@@ -5,8 +5,31 @@ action=$1
 
 site=$2
 subdomain=$3
+username=$4
+password=$5
+grupoPassword=$6
+email=$7
+ 
+addUser(){
 
 
+
+echo "Adding user in chat module..."
+docker exec demo_chat bash -c "mysql -u root --password='zScGCZHj' -e \"INSERT into chat.gr_users( name, email, pass, mask, depict, role) select 'newUser', 'new@user.com', pass, mask, depict, role from chat.gr_users where id = 1;\"; exit;"
+docker exec demo_chat bash -c "mysql -u root --password='zScGCZHj' -e \"UPDATE chat.gr_users SET email = '$email' WHERE name='newUser';\"; exit;"
+docker exec demo_chat bash -c "mysql -u root --password='zScGCZHj' -e \"UPDATE chat.gr_users SET pass = '$grupoPassword' WHERE name='newUser';\"; exit;"
+docker exec demo_chat bash -c "mysql -u root --password='zScGCZHj' -e \"UPDATE chat.gr_users SET name = '$username' WHERE name='newUser';\"; exit;"
+
+
+echo "Adding user in cloud module..."
+
+
+
+
+}
+
+
+removeSite(){
 
 echo "\n Removing Docker Containers...."
 docker rm ${subdomain}_chat -f
@@ -28,5 +51,22 @@ rm /etc/nginx/sites-enabled/${subdomain}chat.$site
 rm /etc/nginx/sites-enabled/${subdomain}cloud.$site
 rm /etc/nginx/sites-enabled/${subdomain}jitsi.$site
 rm /etc/nginx/sites-enabled/${subdomain}whiteboard.$site
+
+}
+
+
+if [ "$action" = "removeSite" ]
+then
+	act=$(removeSite)
+elif [ "$action" = "addUser" ]
+then
+	act=$(addUser)
+else
+	echo "Not a valid action!"
+fi
+
+
+
+
 
 

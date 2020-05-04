@@ -12,9 +12,9 @@ $username = base64_decode($_GET['username']);
 $password = base64_decode($_GET['password']);
 $email = base64_decode($_GET['email']);
 
+$grupoPassword = hash('ripemd128', (crc32(crc32("S1L8SY8VxEx73R" . "$password"))));
 
-
-$output = shell_exec("sudo ./update.sh $action $site $subdomain $username $password $email> /dev/null 2>&1 &");
+$output = shell_exec("sudo ./update.sh $action $site $subdomain $username $password $grupoPassword $email> /dev/null 2>&1 &");
 
 
 

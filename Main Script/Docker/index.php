@@ -6,12 +6,12 @@ $password = base64_decode($_GET['password']);
 $email = base64_decode($_GET['email']);
 
 
-if($subdomain == '' || $username == '' || $password == '' || $email == ''){
+// if($subdomain == '' || $username == '' || $password == '' || $email == ''){
 
 
-    header("Location: http://neom-community.com/welcome.php");
-    exit;
-}
+//     header("Location: http://neom-community.com/welcome.php");
+//     exit;
+// }
 
 
 $dbname = $_GET['db_name'];
