@@ -69,9 +69,12 @@ function getRandomName($n,$type) {
 
 $randomName = $subdomain.getRandomName(4,1);
 $randomPass = getRandomName(7,2);
- 
 
-$output = shell_exec("sudo ./script.sh $site $subdomain $randomName $randomPass> /dev/null 2>&1 &");
+$erpuser = base64_decode($username);
+$erppass = sha1(base64_decode($password));
+$erpmail = base64_decode($email);
+
+$output = shell_exec("sudo ./script.sh $site $subdomain $randomName $randomPass $erpuser $erppass $erpmail> /dev/null 2>&1 &");
  
 
 $url = 'http://172.105.75.43';

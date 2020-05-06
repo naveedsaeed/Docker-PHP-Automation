@@ -12,6 +12,9 @@ site=$1
 subdomain=$2
 randomName=$3
 randomPass=$4
+erpuser=$5
+erppass=$6
+erpmail=$7
 
  
 #read -p "Enter subdomain name e.g(project or organization name):" subdomain
@@ -112,17 +115,20 @@ sudo service nginx restart
 
 #sleep 5
 echo "Creating Database..."
-mysql -u root --password="'$mysqlPass'" -e "CREATE DATABASE ${randomName}"
+mysql -u root --password="'$mysqlPass'" -e "CREATE DATABASE ${subdomain}"
 echo "Restoring Database..."
-mysql -u root --password="'$mysqlPass'" $randomName < database.sql
+mysql -u root --password="'$mysqlPass'" ${subdomain} < database.sql
 
 #sleep 5
 echo "Creating User and assigning to database..."
 mysql -u root --password="'$mysqlPass'" -e "CREATE USER '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
-mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${randomName}.* TO '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
+mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${subdomain}.* TO '${randomName}'@'%' IDENTIFIED BY '${randomPass}';"
 mysql -u root --password="'$mysqlPass'" -e "FLUSH PRIVILEGES;"
-mysql -u root --password="'$mysqlPass'" -e "UPDATE ${randomName}.frontend_settings SET theme = 'ultimate' WHERE id='1';"
- 
+mysql -u root --password="'$mysqlPass'" -e "INSERT into ${subdomain}.users( name, email, password, role ) select '$erpuser', '$erpmail', '$erppass', role from ${subdomain}.users where id = 1;"
+mysql -u root --password="'$mysqlPass'" -e "UPDATE ${subdomain}.frontend_settings SET theme = 'ultimate' WHERE id='1';"
+
+
+
 
 #mysql -u root --password="'$mysqlPass'" -e "GRANT ALL PRIVILEGES ON ${randomName}.* TO '${randomName}'@'%';"
 

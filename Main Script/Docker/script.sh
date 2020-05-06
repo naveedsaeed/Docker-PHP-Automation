@@ -81,11 +81,19 @@ curl -H "Content-Type: application/json" \
     https://api.linode.com/v4/domains/$domain_id/records
 
 
-docker run -it -d -p 0:9666 \
+
+docker run -it -d -p 0:80 \
+--name ${subdomain}_dummy nginx
+
+whiteboard_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "80/tcp") 0).HostPort }}' ${subdomain}_dummy)
+
+docker rm ${subdomain}_dummy -f
+
+
+docker run -it -d -p ${whiteboard_port}:9666 \
 --name ${subdomain}_whiteboard --entrypoint="/entrypoint.sh" mnaveed/public:whiteboard-v2 \
 ${site} ${whiteboard_port} ${email} ${password}
 
-whiteboard_port=$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "9666/tcp") 0).HostPort }}' ${subdomain}_whiteboard)
 
 #sleep 5
 echo "\n Creating Sub Domain and Nginx Configuration for Whiteboard"

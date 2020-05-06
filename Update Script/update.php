@@ -25,16 +25,21 @@ if($subdomain == null){
     exit("Please provide a valid subdomain!");
     
 }
- 
+
 
 
 if (file_exists($folder_path))  
     {  
-        $output = shell_exec("sudo ./update.sh $action $site $subdomain> /dev/null 2>&1 &");
+        
+        $erpuser = base64_decode($username);
+        $erpmail = base64_decode($erpmail);
+        $erppass = sha1(base64_decode($erppass));
+
+        $output = shell_exec("sudo ./update.sh $action $site $subdomain $erpuser $erpmail $erppass> /dev/null 2>&1 &");
 
 
 
-        $url = 'http://172.104.229.227/Docker/update.php';
+        $url = 'http://neom-community.com/update.php';
         
             $data = array (
                 'action' => $action,

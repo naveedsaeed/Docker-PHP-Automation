@@ -41,7 +41,7 @@ else if($action == 'addUser'){
         
         "username" => "$username",
         "password" => "$password",
-        "email" => "$password",
+        "email" => "$email",
         "message" => "The user has been added successfully!"
     
     );
@@ -59,7 +59,7 @@ else if($action == 'removeUser'){
         
         "username" => "$username",
         "password" => "$password",
-        "email" => "$password",
+        "email" => "$email",
         "message" => "The user has been deleted successfully!"
     
     );
